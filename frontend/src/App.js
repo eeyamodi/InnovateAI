@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import FileUpload from "./components/fileUpload";
 
 function App() {
     const [message, setMessage] = useState("");
@@ -12,8 +13,8 @@ function App() {
 
     return (
         <div>
-            <h1>Flask + React Integration</h1>
-            <p>Message from Flask: {message}</p>
+            <h1>Uploading the excel file!!!</h1>
+            <FileUpload/>
         </div>
     );
 }
