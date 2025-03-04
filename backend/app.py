@@ -32,39 +32,41 @@
 # if __name__ == "__main__":
 #     app.run(debug=True)
 
-
-
 from flask import Flask, request, jsonify
-import os
-import pandas as pd
 from flask_cors import CORS
+import pandas as pd
+import lightgbm as lgb
+import pickle
 
 app = Flask(__name__)
-CORS(app)  # Allows requests from React
+CORS(app)  # Enable CORS for React frontend
 
-UPLOAD_FOLDER = "uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+# Load trained LightGBM model
+with open("lgbm_model_patient_readmission.pkl", "rb") as model_file:
+    model = pickle.load(model_file)
 
-@app.route("/upload", methods=["POST"])
-def upload_file():
+# Define expected features
+FEATURE_COLUMNS = ["age", "blood_pressure", "cholesterol", "diabetes", "smoking", "previous_admissions"]
+
+@app.route("/predict_csv", methods=["POST"])
+def predict_csv():
     if "file" not in request.files:
-        return jsonify({"message": "No file found"}), 400
-
-    file = request.files["file"]
+        return jsonify({"error": "No file uploaded"}), 400
     
-    if file.filename == "":
-        return jsonify({"message": "No selected file"}), 400
+    file = request.files["file"]
+    df = pd.read_csv(file)
+    
+    # Validate CSV format
+    if not all(col in df.columns for col in FEATURE_COLUMNS):
+        return jsonify({"error": "Invalid columns in CSV. Required: " + ", ".join(FEATURE_COLUMNS)}), 400
+    
+    # Extract features for prediction
+    X = df[FEATURE_COLUMNS]
+    predictions = model.predict(X)
+    df["predicted_readmission"] = predictions
+    
+    return jsonify(df.to_dict(orient="records"))
 
-    if file:
-        file_path = os.path.join(app.config["UPLOAD_FOLDER"], file.filename)
-        file.save(file_path)
-
-        # Read the Excel file (optional)
-        df = pd.read_excel(file_path)
-        print(df.head())  # Print first few rows to verify
-
-        return jsonify({"message": "File uploaded successfully!", "filename": file.filename}), 200
-
-if __name__ == "__main__":
+if _name_ == "_main_":
     app.run(debug=True)
+    
