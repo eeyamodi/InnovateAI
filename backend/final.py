@@ -145,6 +145,7 @@ df_filtered = df_filtered.dropna()
 X = df_filtered.drop(columns=['readmitted']) 
 y = df_filtered['readmitted'] 
 
+
 # split into train and test sets (80% train, 20% test)
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
