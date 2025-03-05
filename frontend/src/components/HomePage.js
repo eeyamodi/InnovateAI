@@ -50,7 +50,7 @@ const HomePage = () => {
             <Container maxWidth="md">
                 <Paper elevation={6} className="upload-box">
                     <Typography variant="h3" gutterBottom>
-                        🏥 Heart Failure Readmission Prediction
+                        Heart Failure Readmission Prediction
                     </Typography>
                     <Typography variant="body1" color="textSecondary">
                         Upload a CSV file to analyze patient data and predict readmission risk.
