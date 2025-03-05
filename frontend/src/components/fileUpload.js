@@ -1,50 +1,78 @@
-
 import React, { useState } from "react";
+import axios from "axios";
 
 const FileUpload = () => {
-  const [file, setFile] = useState(null);
-  const [message, setMessage] = useState("");
+    const [file, setFile] = useState(null);
+    const [predictions, setPredictions] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
-  // Handle file selection
-  const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
-  };
+    const handleFileChange = (event) => {
+        setFile(event.target.files[0]);
+    };
 
-  // Handle file upload
-  const handleUpload = async () => {
-    if (!file) {
-      setMessage("⚠️ Please select a file first.");
-      return;
-    }
+    const handleUpload = async () => {
+        if (!file) {
+            setError("Please select a CSV file");
+            return;
+        }
 
-    const formData = new FormData();
-    formData.append("file", file);
+        const formData = new FormData();
+        formData.append("file", file);
 
-    try {
-      const response = await fetch("http://127.0.0.1:5000/upload", {
-        method: "POST",
-        body: formData,
-      });
+        setLoading(true);
+        setError("");
+        
+        try {
+            const response = await axios.post(
+                "http://127.0.0.1:5000/predict_json", // Flask API endpoint
+                formData,
+                {
+                    headers: { "Content-Type": "multipart/form-data" },
+                }
+            );
 
-      const data = await response.json();
-      if (response.ok) {
-        setMessage(`✅ ${data.message}`);
-      } else {
-        setMessage(`❌ Error: ${data.message}`);
-      }
-    } catch (error) {
-      setMessage("❌ Failed to upload file.");
-    }
-  };
+            setPredictions(response.data);
+        } catch (error) {
+            console.error("Error uploading file:", error);
+            setError("Error uploading file. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  return (
-    <div style={{ textAlign: "center", marginTop: "20px" }}>
-      <h2>Upload an Excel File</h2>
-      <input type="file" onChange={handleFileChange} /> <br /><br />
-      <button onClick={handleUpload}>Upload</button>
-      {message && <p>{message}</p>}
-    </div>
-  );
+    return (
+        <div className="container">
+            <h2>Heart Failure Prediction</h2>
+            <input type="file" accept=".csv" onChange={handleFileChange} />
+            <button onClick={handleUpload} disabled={loading}>
+                {loading ? "Uploading..." : "Upload & Predict"}
+            </button>
+            {error && <p className="error">{error}</p>}
+
+            {predictions.length > 0 && (
+                <div>
+                    <h3>Predictions:</h3>
+                    <table border="1">
+                        <thead>
+                            <tr>
+                                <th>Patient ID</th>
+                                <th>Readmission Prediction</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {predictions.map((item, index) => (
+                                <tr key={index}>
+                                    <td>{item.patient_id}</td>
+                                    <td>{item.readmitted_prediction}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </div>
+    );
 };
 
 export default FileUpload;
