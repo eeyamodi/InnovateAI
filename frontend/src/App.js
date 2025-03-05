@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import FileUpload from "./components/FileUpload.js";
+import FileUpload from "./components/FileUpload";
 import Contact from "./components/Contact";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
