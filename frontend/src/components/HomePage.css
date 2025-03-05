@@ -1,0 +1,28 @@
+.homepage {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to right, #e3f2fd, #a5d6a7);
+}
+
+.upload-box {
+    padding: 30px;
+    border-radius: 15px;
+    background: white;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 10px 20px;
+    cursor: pointer;
+    background: #2E7D32;
+    color: white;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.custom-file-upload input {
+    display: none;
+}
