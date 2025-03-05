@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./FileUpload.css";  // Import the CSS file
 
 const FileUpload = () => {
     const [file, setFile] = useState(null);
@@ -22,7 +23,7 @@ const FileUpload = () => {
 
         setLoading(true);
         setError("");
-        
+
         try {
             const response = await axios.post(
                 "http://127.0.0.1:5000/predict_json", // Flask API endpoint
@@ -43,10 +44,10 @@ const FileUpload = () => {
 
     return (
         <div className="container">
-            <h2>Heart Failure Prediction</h2>
-            <input type="file" accept=".csv" onChange={handleFileChange} />
-            <button onClick={handleUpload} disabled={loading}>
-                {loading ? "Uploading..." : "Upload & Predict"}
+
+            <input className="btnFileUpload" type="file" accept=".csv" onChange={handleFileChange} />
+            <button  onClick={handleUpload} disabled={loading}>
+                {loading ? "Uploading..." : "Predict"}
             </button>
             {error && <p className="error">{error}</p>}
 
